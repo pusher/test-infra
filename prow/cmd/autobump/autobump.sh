@@ -22,6 +22,7 @@ PLANK_DEPLOYMENT_FILE="${PLANK_DEPLOYMENT_FILE:-}"
 GH_ORG="${GH_ORG:-}"
 GH_REPO="${GH_REPO:-}"
 FORK_GH_REPO="${FORK_GH_REPO:-${GH_REPO}}"
+PR_BRANCH="${PR_BRANCH:-master}"
 
 
 # TODO(fejta): rewrite this in a better language REAL SOON  <-lol
@@ -54,11 +55,11 @@ main() {
 	echo -e "Pushing commit to ${user}/${FORK_GH_REPO}:autobump..." >&2
 	git push -f "https://${user}:$(cat "${token}")@github.com/${user}/${FORK_GH_REPO}" HEAD:autobump 2>/dev/null
 
-	echo "Creating PR to merge ${user}:autobump into master..." >&2
+	echo "Creating PR to merge ${user}:autobump into ${PR_BRANCH}..." >&2
 	comparison=$(extract-commit "${old_version}")...$(extract-commit "${version}")
 	/pr-creator \
 	  --github-token-path="${token}" \
-	  --org="${GH_ORG}" --repo="${GH_REPO}" --branch=master \
+	  --org="${GH_ORG}" --repo="${GH_REPO}" --branch=${PR_BRANCH}\
 	  --title="${title}" --match-title="Bump prow from" \
 	  --body="Included changes: https://github.com/kubernetes/test-infra/compare/${comparison}" \
 	  --source="${user}":autobump \
